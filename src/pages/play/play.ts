@@ -16,6 +16,7 @@ export class PlayPage {
   @ViewChild(Content) content: Content;
 
   show_menu: boolean;
+  
   saved_states: Array<{
     set_no: number, set_end: boolean, game_end: boolean,
     left_point: number, right_point: number, sets: any[]
@@ -48,13 +49,13 @@ export class PlayPage {
   public newSet() {
 
     if (this.set_no < 3) {
-      
+
       this.set_no += 1;
       this.set_end = false;
 
       this.resetPoints();
     } else {
-      
+
       this.game_end = true;
     }
   }
@@ -92,7 +93,7 @@ export class PlayPage {
     this.saveState();
 
     if (!this.checkFinished()) {
-      
+
       this.left_point += 1;
 
       if (this.checkFinished())
@@ -105,7 +106,7 @@ export class PlayPage {
     this.saveState();
 
     if (!this.checkFinished()) {
-      
+
       this.right_point += 1;
 
       if (this.checkFinished())
@@ -123,7 +124,7 @@ export class PlayPage {
     );
 
     if (this.set_no === 3) {
-      
+
       this.game_end = true;
       this.storageService.saveHistoric(this.sets);
     }
@@ -137,7 +138,7 @@ export class PlayPage {
   }
 
   private isSetFinished(): boolean {
-    
+
     let max = Math.max(this.left_point, this.right_point);
     let min = Math.min(this.left_point, this.right_point);
 
@@ -168,7 +169,7 @@ export class PlayPage {
   public undo() {
 
     if (this.canUndo()) {
-      
+
       this.restoreState();
     }
   }
@@ -198,9 +199,9 @@ export class PlayPage {
   private restoreState() {
 
     if (this.saved_states) {
-      
+
       if (this.game_end) {
-        
+
         this.storageService.undoSaveHistoric();
       }
 
@@ -216,7 +217,7 @@ export class PlayPage {
   }
 
   private clone(sets: Set[]): Set[] {
-    
+
     let setsCopy: Set[] = [];
 
     sets.forEach(

@@ -16,9 +16,13 @@
     text-align: center;
   }
   
-  .padding {
-    padding-top: 100px;
-    padding-bottom: 100px;
+  ion-grid {
+    padding: 0px;
+  }
+  
+  .big {
+    padding-top: 25vh;
+    padding-bottom: 25vh;
   }
   
   .large {
@@ -30,33 +34,44 @@
 
   <h1>SET {{set_no}}</h1>
 
-  <ion-row center>
-    <ion-col>
-      <button class="padding" (click)="leftScored()" [disabled]="set_end" ion-button large full color="secondary"><h1 class="large">{{left_point}}</h1></button>
-    </ion-col>
+  <ion-grid>
+    <ion-row center>
+      <ion-col>
+        <button class="big" (click)="leftScored()" [disabled]="set_end" ion-button large full color="secondary"><h1 class="large">{{left_point}}</h1></button>
+      </ion-col>
 
-    <ion-col>
-      <button class="padding" (click)="rightScored()" [disabled]="set_end" ion-button large full color="danger"><h1 class="large">{{right_point}}</h1></button>
-    </ion-col>
-  </ion-row>
+      <ion-col>
+        <button class="big" (click)="rightScored()" [disabled]="set_end" ion-button large full color="danger"><h1 class="large">{{right_point}}</h1></button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
-  <ion-row center>
-    <ion-col width-30 *ngFor="let set of sets">
-      <ion-badge color="dark" item-right>{{set.left}} : {{set.right}}</ion-badge>
-    </ion-col>
-  </ion-row>
+  <ion-grid>
+    <ion-row center>
+      <ion-col width-30 *ngFor="let set of sets">
+        <ion-badge color="dark" item-right>{{set.left}} : {{set.right}}</ion-badge>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-grid>
+    <ion-row center>
+      <ion-col width-33>
+        <button *ngIf="set_end && !game_end" (click)="newSet()" ion-button small full round>New set</button>
+        <button *ngIf="!set_end && !game_end" (click)="resetSet()" ion-button small full round>Reset set</button>
+      </ion-col>
+      <ion-col width-33>
+        <button *ngIf="game_end" (click)="resetAll()" ion-button small full round>New game</button>
+        <button *ngIf="!game_end" (click)="resetAll()" ion-button small full round>Reset all</button>
+      </ion-col>
+      <ion-col width-33>
+        <button [disabled]="!canUndo()" (click)="undo()" ion-button small full round>Undo</button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
   <br />
-  <br />
 
-  <button *ngIf="set_end && !game_end" (click)="newSet()" ion-button small full round>New set</button>
-  <button *ngIf="!set_end && !game_end" (click)="resetSet()" ion-button small full round>Reset set</button>
-  <button *ngIf="game_end" (click)="resetAll()" ion-button small full round>New game</button>
-  <button *ngIf="!game_end" (click)="resetAll()" ion-button small full round>Reset all</button>
-  <button [disabled]="!canUndo()" (click)="undo()" ion-button small full round>Undo</button>
-  
-  <br />
-  
   <button *ngIf="!show_menu" (click)="toggleMenu()" ion-button small full round>Show menu</button>
   <button *ngIf="show_menu" (click)="toggleMenu()" ion-button small full round>Hide menu</button>
 
