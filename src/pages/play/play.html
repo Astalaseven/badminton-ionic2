@@ -1,0 +1,63 @@
+<ion-header *ngIf="show_menu">
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Let's play!</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<style>
+  h1 {
+    text-align: center;
+  }
+  
+  ion-col {
+    text-align: center;
+  }
+  
+  .padding {
+    padding-top: 100px;
+    padding-bottom: 100px;
+  }
+  
+  .large {
+    font-size: 25vw;
+  }
+</style>
+
+<ion-content padding>
+
+  <h1>SET {{set_no}}</h1>
+
+  <ion-row center>
+    <ion-col>
+      <button class="padding" (click)="leftScored()" [disabled]="set_end" ion-button large full color="secondary"><h1 class="large">{{left_point}}</h1></button>
+    </ion-col>
+
+    <ion-col>
+      <button class="padding" (click)="rightScored()" [disabled]="set_end" ion-button large full color="danger"><h1 class="large">{{right_point}}</h1></button>
+    </ion-col>
+  </ion-row>
+
+  <ion-row center>
+    <ion-col width-30 *ngFor="let set of sets">
+      <ion-badge color="dark" item-right>{{set.left}} : {{set.right}}</ion-badge>
+    </ion-col>
+  </ion-row>
+
+  <br />
+  <br />
+
+  <button *ngIf="set_end && !game_end" (click)="newSet()" ion-button small full round>New set</button>
+  <button *ngIf="!set_end && !game_end" (click)="resetSet()" ion-button small full round>Reset set</button>
+  <button *ngIf="game_end" (click)="resetAll()" ion-button small full round>New game</button>
+  <button *ngIf="!game_end" (click)="resetAll()" ion-button small full round>Reset all</button>
+  <button [disabled]="!undo_callback" (click)="undo()" ion-button small full round>Undo</button>
+  
+  <br />
+  
+  <button *ngIf="!show_menu" (click)="toggleMenu()" ion-button small full round>Show menu</button>
+  <button *ngIf="show_menu" (click)="toggleMenu()" ion-button small full round>Hide menu</button>
+
+</ion-content>
