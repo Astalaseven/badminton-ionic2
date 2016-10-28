@@ -9,9 +9,7 @@ import { StorageService } from '../../providers/storage-service';
   templateUrl: 'historic.html'
 })
 export class HistoricPage {
-  selectedItem: any;
-  icons: string[];
-  // items: Array<{sets: [], date: Date}>;
+  
   items: any;
 
   constructor(public storageService: StorageService) {
@@ -19,8 +17,6 @@ export class HistoricPage {
     this.storageService.getHistoric()
       .then(
       data => {
-        console.log('historic');
-        console.log(data);
         this.items = data;
       },
       error => {
@@ -31,10 +27,12 @@ export class HistoricPage {
   }
 
   public toLocaleDateString(d: string): string {
+    
     return (new Date(d)).toLocaleDateString();
   }
   
   public toLocaleTimeString(d: string): string {
+    
     return (new Date(d)).toLocaleTimeString();
   }
 }

@@ -5,7 +5,7 @@ import { NativeStorage } from 'ionic-native';
 export class StorageService {
 
   constructor() {
-    console.log('Hello StorageService Provider');
+
   }
 
   public getHistoric() {
@@ -22,23 +22,18 @@ export class StorageService {
   }
 
   public saveHistoric(sets) {
-    // NativeStorage.setItem('historic', []);
 
     NativeStorage.getItem('historic')
       .then(
       data => {
-        console.log('Save sets');
-        console.log(data);
-        
+
         data.push(
           {
             'sets': sets,
             'date': new Date(),
           }
         );
-        
-        console.log(data.length);
-        
+
         NativeStorage.setItem('historic', data).then(
           (data) => {
             console.log('Stored');
@@ -54,20 +49,15 @@ export class StorageService {
       }
       )
   }
-  
+
   public undoSaveHistoric() {
-    // NativeStorage.setItem('historic', []);
 
     NativeStorage.getItem('historic')
       .then(
       data => {
-        console.log('Save sets');
-        console.log(data);
-        
+
         data.pop();
-        
-        console.log(data.length);
-        
+
         NativeStorage.setItem('historic', data).then(
           (data) => {
             console.log('Stored');

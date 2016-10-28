@@ -81047,7 +81047,6 @@ var __metadata$3 = (undefined && undefined.__metadata) || function (k, v) {
 };
 var StorageService = (function () {
     function StorageService() {
-        console.log('Hello StorageService Provider');
     }
     StorageService.prototype.getHistoric = function () {
         return NativeStorage.getItem('historic')
@@ -81059,16 +81058,12 @@ var StorageService = (function () {
         });
     };
     StorageService.prototype.saveHistoric = function (sets) {
-        // NativeStorage.setItem('historic', []);
         NativeStorage.getItem('historic')
             .then(function (data) {
-            console.log('Save sets');
-            console.log(data);
             data.push({
                 'sets': sets,
                 'date': new Date(),
             });
-            console.log(data.length);
             NativeStorage.setItem('historic', data).then(function (data) {
                 console.log('Stored');
                 console.log(data);
@@ -81081,13 +81076,9 @@ var StorageService = (function () {
         });
     };
     StorageService.prototype.undoSaveHistoric = function () {
-        // NativeStorage.setItem('historic', []);
         NativeStorage.getItem('historic')
             .then(function (data) {
-            console.log('Save sets');
-            console.log(data);
             data.pop();
-            console.log(data.length);
             NativeStorage.setItem('historic', data).then(function (data) {
                 console.log('Stored');
                 console.log(data);
@@ -81115,18 +81106,18 @@ var __decorate$108 = (undefined && undefined.__decorate) || function (decorators
 var __metadata$2 = (undefined && undefined.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+
 var PlayPage = (function () {
     function PlayPage(storageService) {
         this.storageService = storageService;
-        // this.resetAll();
         this.show_menu = false;
+        this.saved_states = [];
         this.set_no = 1;
         this.set_end = false;
         this.game_end = false;
         this.left_point = 0;
         this.right_point = 0;
         this.sets = [];
-        this.undo_callback = null;
     }
     PlayPage.prototype.newSet = function () {
         if (this.set_no < 3) {
@@ -81137,58 +81128,39 @@ var PlayPage = (function () {
         else {
             this.game_end = true;
         }
-        this.undo_callback = null;
     };
     PlayPage.prototype.resetPoints = function () {
         this.left_point = 0;
         this.right_point = 0;
     };
     PlayPage.prototype.resetSet = function () {
+        this.saveState();
         this.set_end = false;
         this.resetPoints();
-        this.undo_callback = null;
     };
     PlayPage.prototype.resetAll = function () {
+        this.saveState();
         this.set_no = 1;
         this.set_end = false;
         this.game_end = false;
         this.resetPoints();
         this.sets = [];
-        this.undo_callback = null;
     };
     PlayPage.prototype.leftScored = function () {
+        this.saveState();
         if (!this.checkFinished()) {
             this.left_point += 1;
             if (this.checkFinished())
                 this.setWon();
         }
-        this.undo_callback = this.undoLeftScored;
-    };
-    PlayPage.prototype.undoLeftScored = function () {
-        console.log('undo left');
-        if (this.set_end)
-            this.storageService.undoSaveHistoric();
-        this.left_point -= 1;
-        this.set_end = false;
-        this.sets.pop();
-        this.undo_callback = null;
     };
     PlayPage.prototype.rightScored = function () {
+        this.saveState();
         if (!this.checkFinished()) {
             this.right_point += 1;
             if (this.checkFinished())
                 this.setWon();
         }
-        this.undo_callback = this.undoRightScored;
-    };
-    PlayPage.prototype.undoRightScored = function () {
-        console.log('undo right');
-        if (this.set_end)
-            this.storageService.undoSaveHistoric();
-        this.right_point -= 1;
-        this.set_end = false;
-        this.sets.pop();
-        this.undo_callback = null;
     };
     PlayPage.prototype.setWon = function () {
         this.sets.push({
@@ -81205,10 +81177,10 @@ var PlayPage = (function () {
         return this.set_end;
     };
     PlayPage.prototype.isSetFinished = function () {
-        var diff = Math.abs(this.left_point - this.right_point);
-        var twoPointLead = (diff >= 2);
         var max = Math.max(this.left_point, this.right_point);
         var min = Math.min(this.left_point, this.right_point);
+        var diff = (max - min);
+        var twoPointLead = (diff >= 2);
         // first to 30 wins
         if (max === 30) {
             return true;
@@ -81224,10 +81196,45 @@ var PlayPage = (function () {
         return false;
     };
     PlayPage.prototype.undo = function () {
-        if (this.undo_callback) {
-            console.log('undo');
-            this.undo_callback();
+        if (this.saved_states) {
+            this.restoreState();
         }
+    };
+    PlayPage.prototype.canUndo = function () {
+        return this.saved_states.length > 0;
+    };
+    PlayPage.prototype.saveState = function () {
+        if (this.saved_states.length === 10)
+            this.saved_states.shift();
+        this.saved_states.push({
+            sets: this.clone(this.sets),
+            set_no: this.set_no,
+            set_end: this.set_end,
+            game_end: this.game_end,
+            left_point: this.left_point,
+            right_point: this.right_point
+        });
+    };
+    PlayPage.prototype.restoreState = function () {
+        if (this.saved_states) {
+            if (this.game_end) {
+                this.storageService.undoSaveHistoric();
+            }
+            var state$$1 = this.saved_states.pop();
+            this.sets = state$$1.sets;
+            this.set_no = state$$1.set_no;
+            this.set_end = state$$1.set_end;
+            this.game_end = state$$1.game_end;
+            this.left_point = state$$1.left_point;
+            this.right_point = state$$1.right_point;
+        }
+    };
+    PlayPage.prototype.clone = function (sets) {
+        var setsCopy = [];
+        sets.forEach(function (set) {
+            setsCopy.push({ left: set.left, right: set.right });
+        });
+        return setsCopy;
     };
     PlayPage.prototype.toggleMenu = function () {
         this.show_menu = !this.show_menu;
@@ -81238,7 +81245,7 @@ var PlayPage = (function () {
         __metadata$2('design:type', Content)
     ], PlayPage.prototype, "content", void 0);
     PlayPage = __decorate$108([
-        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/play/play.html"*/'<ion-header *ngIf="show_menu">\n  <ion-navbar>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>Let\'s play!</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<style>\n  h1 {\n    text-align: center;\n  }\n  \n  ion-col {\n    text-align: center;\n  }\n  \n  .padding {\n    padding-top: 100px;\n    padding-bottom: 100px;\n  }\n  \n  .large {\n    font-size: 25vw;\n  }\n</style>\n\n<ion-content padding>\n\n  <h1>SET {{set_no}}</h1>\n\n  <ion-row center>\n    <ion-col>\n      <button class="padding" (click)="leftScored()" [disabled]="set_end" ion-button large full color="secondary"><h1 class="large">{{left_point}}</h1></button>\n    </ion-col>\n\n    <ion-col>\n      <button class="padding" (click)="rightScored()" [disabled]="set_end" ion-button large full color="danger"><h1 class="large">{{right_point}}</h1></button>\n    </ion-col>\n  </ion-row>\n\n  <ion-row center>\n    <ion-col width-30 *ngFor="let set of sets">\n      <ion-badge color="dark" item-right>{{set.left}} : {{set.right}}</ion-badge>\n    </ion-col>\n  </ion-row>\n\n  <br />\n  <br />\n\n  <button *ngIf="set_end && !game_end" (click)="newSet()" ion-button small full round>New set</button>\n  <button *ngIf="!set_end && !game_end" (click)="resetSet()" ion-button small full round>Reset set</button>\n  <button *ngIf="game_end" (click)="resetAll()" ion-button small full round>New game</button>\n  <button *ngIf="!game_end" (click)="resetAll()" ion-button small full round>Reset all</button>\n  <button [disabled]="!undo_callback" (click)="undo()" ion-button small full round>Undo</button>\n  \n  <br />\n  \n  <button *ngIf="!show_menu" (click)="toggleMenu()" ion-button small full round>Show menu</button>\n  <button *ngIf="show_menu" (click)="toggleMenu()" ion-button small full round>Hide menu</button>\n\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/play/play.html"*/
+        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/play/play.html"*/'<ion-header *ngIf="show_menu">\n  <ion-navbar>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>Let\'s play!</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<style>\n  h1 {\n    text-align: center;\n  }\n  \n  ion-col {\n    text-align: center;\n  }\n  \n  .padding {\n    padding-top: 100px;\n    padding-bottom: 100px;\n  }\n  \n  .large {\n    font-size: 25vw;\n  }\n</style>\n\n<ion-content padding>\n\n  <h1>SET {{set_no}}</h1>\n\n  <ion-row center>\n    <ion-col>\n      <button class="padding" (click)="leftScored()" [disabled]="set_end" ion-button large full color="secondary"><h1 class="large">{{left_point}}</h1></button>\n    </ion-col>\n\n    <ion-col>\n      <button class="padding" (click)="rightScored()" [disabled]="set_end" ion-button large full color="danger"><h1 class="large">{{right_point}}</h1></button>\n    </ion-col>\n  </ion-row>\n\n  <ion-row center>\n    <ion-col width-30 *ngFor="let set of sets">\n      <ion-badge color="dark" item-right>{{set.left}} : {{set.right}}</ion-badge>\n    </ion-col>\n  </ion-row>\n\n  <br />\n  <br />\n\n  <button *ngIf="set_end && !game_end" (click)="newSet()" ion-button small full round>New set</button>\n  <button *ngIf="!set_end && !game_end" (click)="resetSet()" ion-button small full round>Reset set</button>\n  <button *ngIf="game_end" (click)="resetAll()" ion-button small full round>New game</button>\n  <button *ngIf="!game_end" (click)="resetAll()" ion-button small full round>Reset all</button>\n  <button [disabled]="!canUndo()" (click)="undo()" ion-button small full round>Undo</button>\n  \n  <br />\n  \n  <button *ngIf="!show_menu" (click)="toggleMenu()" ion-button small full round>Show menu</button>\n  <button *ngIf="show_menu" (click)="toggleMenu()" ion-button small full round>Hide menu</button>\n\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/play/play.html"*/
         }), 
         __metadata$2('design:paramtypes', [StorageService])
     ], PlayPage);
@@ -81260,8 +81267,6 @@ var HistoricPage = (function () {
         this.storageService = storageService;
         this.storageService.getHistoric()
             .then(function (data) {
-            console.log('historic');
-            console.log(data);
             _this.items = data;
         }, function (error) {
             console.log(error);

@@ -53,7 +53,7 @@
   <button *ngIf="!set_end && !game_end" (click)="resetSet()" ion-button small full round>Reset set</button>
   <button *ngIf="game_end" (click)="resetAll()" ion-button small full round>New game</button>
   <button *ngIf="!game_end" (click)="resetAll()" ion-button small full round>Reset all</button>
-  <button [disabled]="!undo_callback" (click)="undo()" ion-button small full round>Undo</button>
+  <button [disabled]="!canUndo()" (click)="undo()" ion-button small full round>Undo</button>
   
   <br />
   
