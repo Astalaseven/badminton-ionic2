@@ -81196,12 +81196,12 @@ var PlayPage = (function () {
         return false;
     };
     PlayPage.prototype.undo = function () {
-        if (this.saved_states) {
+        if (this.canUndo()) {
             this.restoreState();
         }
     };
     PlayPage.prototype.canUndo = function () {
-        return this.saved_states.length > 0;
+        return this.saved_states && this.saved_states.length > 0;
     };
     PlayPage.prototype.saveState = function () {
         if (this.saved_states.length === 10)

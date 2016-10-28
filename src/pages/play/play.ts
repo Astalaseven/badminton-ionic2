@@ -167,15 +167,15 @@ export class PlayPage {
 
   public undo() {
 
-    if (this.saved_states) {
+    if (this.canUndo()) {
       
       this.restoreState();
     }
   }
 
-  public canUndo() {
+  public canUndo(): boolean {
 
-    return this.saved_states.length > 0;
+    return this.saved_states && this.saved_states.length > 0;
   }
 
   private saveState() {
