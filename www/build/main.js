@@ -81111,7 +81111,6 @@ var __metadata$2 = (undefined && undefined.__metadata) || function (k, v) {
 var PlayPage = (function () {
     function PlayPage(storageService) {
         this.storageService = storageService;
-        this.show_menu = false;
         this.saved_states = [];
         this.set_no = 1;
         this.set_end = false;
@@ -81237,16 +81236,12 @@ var PlayPage = (function () {
         });
         return setsCopy;
     };
-    PlayPage.prototype.toggleMenu = function () {
-        this.show_menu = !this.show_menu;
-        this.content.resize();
-    };
     __decorate$108([
         ViewChild(Content), 
         __metadata$2('design:type', Content)
     ], PlayPage.prototype, "content", void 0);
     PlayPage = __decorate$108([
-        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/play/play.html"*/'<ion-header *ngIf="show_menu">\n  <ion-navbar>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>Let\'s play!</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<style>\n  h1 {\n    text-align: center;\n  }\n  \n  ion-col {\n    text-align: center;\n  }\n  \n  ion-grid {\n    padding: 0px;\n  }\n  \n  .big {\n    padding-top: 25vh;\n    padding-bottom: 25vh;\n  }\n  \n  .large {\n    font-size: 25vw;\n  }\n</style>\n\n<ion-content padding>\n\n  <h1>SET {{set_no}}</h1>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col>\n        <button class="big" (click)="leftScored()" [disabled]="set_end" ion-button large full color="secondary"><h1 class="large">{{left_point}}</h1></button>\n      </ion-col>\n\n      <ion-col>\n        <button class="big" (click)="rightScored()" [disabled]="set_end" ion-button large full color="danger"><h1 class="large">{{right_point}}</h1></button>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col width-30 *ngFor="let set of sets">\n        <ion-badge color="dark" item-right>{{set.left}} : {{set.right}}</ion-badge>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col width-33>\n        <button *ngIf="set_end && !game_end" (click)="newSet()" ion-button small full round>New set</button>\n        <button *ngIf="!set_end && !game_end" (click)="resetSet()" ion-button small full round>Reset set</button>\n      </ion-col>\n      <ion-col width-33>\n        <button *ngIf="game_end" (click)="resetAll()" ion-button small full round>New game</button>\n        <button *ngIf="!game_end" (click)="resetAll()" ion-button small full round>Reset all</button>\n      </ion-col>\n      <ion-col width-33>\n        <button [disabled]="!canUndo()" (click)="undo()" ion-button small full round>Undo</button>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <br />\n\n  <button *ngIf="!show_menu" (click)="toggleMenu()" ion-button small full round>Show menu</button>\n  <button *ngIf="show_menu" (click)="toggleMenu()" ion-button small full round>Hide menu</button>\n\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/play/play.html"*/
+        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/play/play.html"*/'<style>\n  h1 {\n    text-align: center;\n  }\n  \n  ion-col {\n    text-align: center;\n  }\n  \n  ion-grid {\n    padding: 0px;\n  }\n  \n  .big {\n    padding-top: 25vh;\n    padding-bottom: 25vh;\n  }\n  \n  .large {\n    font-size: 25vw;\n  }\n</style>\n\n<ion-content padding>\n\n  <h1>SET {{set_no}}</h1>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col>\n        <button class="big" (click)="leftScored()" [disabled]="set_end" ion-button large full color="secondary"><h1 class="large">{{left_point}}</h1></button>\n      </ion-col>\n\n      <ion-col>\n        <button class="big" (click)="rightScored()" [disabled]="set_end" ion-button large full color="danger"><h1 class="large">{{right_point}}</h1></button>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col width-30 *ngFor="let set of sets">\n        <ion-badge color="dark" item-right>{{set.left}} : {{set.right}}</ion-badge>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col width-33>\n        <button *ngIf="set_end && !game_end" (click)="newSet()" ion-button small full round>New set</button>\n        <button *ngIf="!set_end && !game_end" (click)="resetSet()" ion-button small full round>Reset set</button>\n      </ion-col>\n      <ion-col width-33>\n        <button *ngIf="game_end" (click)="resetAll()" ion-button small full round>New game</button>\n        <button *ngIf="!game_end" (click)="resetAll()" ion-button small full round>Reset all</button>\n      </ion-col>\n      <ion-col width-33>\n        <button [disabled]="!canUndo()" (click)="undo()" ion-button small full round>Undo</button>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <br />\n\n  <button ion-button small full round menuToggle>Open menu</button>\n\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/play/play.html"*/
         }), 
         __metadata$2('design:paramtypes', [StorageService])
     ], PlayPage);
@@ -81274,15 +81269,20 @@ var HistoricPage = (function () {
             console.log(error);
         });
     }
+    HistoricPage.prototype.toggleSort = function () {
+        this.toggle_sort();
+    };
     HistoricPage.prototype.sortByDateAscending = function () {
         this.items = this.items.sort(function (a, b) {
             return new Date(a.date).getTime() - new Date(b.date).getTime();
         });
+        this.toggle_sort = this.sortByDateDescending;
     };
     HistoricPage.prototype.sortByDateDescending = function () {
         this.items = this.items.sort(function (a, b) {
             return new Date(b.date).getTime() - new Date(a.date).getTime();
         });
+        this.toggle_sort = this.sortByDateAscending;
     };
     HistoricPage.prototype.toLocaleDateString = function (d) {
         return (new Date(d)).toLocaleDateString();
@@ -81291,7 +81291,7 @@ var HistoricPage = (function () {
         return (new Date(d)).toLocaleTimeString();
     };
     HistoricPage = __decorate$110([
-        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/historic/historic.html"*/'<ion-header>\n  <ion-navbar>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>Historic</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content>\n  <ion-list>\n    <ion-card *ngFor="let item of items">\n      <ion-item>\n        <ion-row center>\n          <ion-col *ngFor="let set of item.sets">\n            <ion-badge color="dark" item-right>{{set.left}} : {{set.right}}</ion-badge>\n          </ion-col>\n        </ion-row>\n        <p>{{toLocaleDateString(item.date)}} - {{toLocaleTimeString(item.date)}}</p>\n      </ion-item>\n    </ion-card>\n  </ion-list>\n\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/historic/historic.html"*/
+        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/historic/historic.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-buttons left>\n      <button ion-button menuToggle>\n        <ion-icon name="menu"></ion-icon>\n      </button>\n    </ion-buttons>\n\n    <ion-title>\n      Historic\n    </ion-title>\n\n    <ion-buttons end>\n      <button ion-button (click)="toggleSort()">\n        <ion-icon name="ios-funnel-outline"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n</ion-header>\n\n<ion-content>\n  <ion-list>\n    <ion-card *ngFor="let item of items">\n      <ion-item>\n        <ion-row center>\n          <ion-col *ngFor="let set of item.sets">\n            <ion-badge color="dark" item-right>{{set.left}} : {{set.right}}</ion-badge>\n          </ion-col>\n        </ion-row>\n        <p>{{toLocaleDateString(item.date)}} - {{toLocaleTimeString(item.date)}}</p>\n      </ion-item>\n    </ion-card>\n  </ion-list>\n\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/historic/historic.html"*/
         }), 
         __metadata$4('design:paramtypes', [StorageService])
     ], HistoricPage);

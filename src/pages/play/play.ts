@@ -11,8 +11,6 @@ import { Set, StorageService } from '../../providers/storage-service';
 export class PlayPage {
   @ViewChild(Content) content: Content;
 
-  show_menu: boolean;
-  
   saved_states: Array<{
     set_no: number, set_end: boolean, game_end: boolean,
     left_point: number, right_point: number, sets: any[]
@@ -29,7 +27,6 @@ export class PlayPage {
 
   constructor(public storageService: StorageService) {
 
-    this.show_menu = false;
     this.saved_states = [];
 
     this.set_no = 1;
@@ -223,11 +220,5 @@ export class PlayPage {
     )
 
     return setsCopy;
-  }
-
-  public toggleMenu() {
-
-    this.show_menu = !this.show_menu;
-    this.content.resize();
   }
 }

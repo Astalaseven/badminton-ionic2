@@ -1,12 +1,3 @@
-<ion-header *ngIf="show_menu">
-  <ion-navbar>
-    <button ion-button menuToggle>
-      <ion-icon name="menu"></ion-icon>
-    </button>
-    <ion-title>Let's play!</ion-title>
-  </ion-navbar>
-</ion-header>
-
 <style>
   h1 {
     text-align: center;
@@ -72,7 +63,6 @@
 
   <br />
 
-  <button *ngIf="!show_menu" (click)="toggleMenu()" ion-button small full round>Show menu</button>
-  <button *ngIf="show_menu" (click)="toggleMenu()" ion-button small full round>Hide menu</button>
+  <button ion-button small full round menuToggle>Open menu</button>
 
 </ion-content>

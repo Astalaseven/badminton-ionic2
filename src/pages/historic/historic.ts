@@ -9,6 +9,7 @@ import { Game, StorageService } from '../../providers/storage-service';
 export class HistoricPage {
 
   items: any[];
+  toggle_sort: Function;
 
   constructor(public storageService: StorageService) {
 
@@ -24,6 +25,11 @@ export class HistoricPage {
       );
 
   }
+  
+  public toggleSort() {
+    
+    this.toggle_sort();
+  }
 
   public sortByDateAscending() {
 
@@ -31,6 +37,8 @@ export class HistoricPage {
 
       return new Date(a.date).getTime() - new Date(b.date).getTime();
     });
+    
+    this.toggle_sort = this.sortByDateDescending;
   }
 
   public sortByDateDescending() {
@@ -39,6 +47,8 @@ export class HistoricPage {
 
       return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
+    
+    this.toggle_sort = this.sortByDateAscending;
   }
 
   public toLocaleDateString(d: string): string {
