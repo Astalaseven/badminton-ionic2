@@ -1,6 +1,17 @@
 import { Injectable } from '@angular/core';
 import { NativeStorage } from 'ionic-native';
 
+
+export class Set {
+  left: number;
+  right: number;
+}
+
+export class Game {
+  sets: Set[];
+  date: Date;
+}
+
 @Injectable()
 export class StorageService {
 

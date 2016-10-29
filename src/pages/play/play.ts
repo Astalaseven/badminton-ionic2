@@ -2,12 +2,8 @@ import { Component } from '@angular/core';
 import { ViewChild } from '@angular/core';
 import { Content } from 'ionic-angular';
 
-import { StorageService } from '../../providers/storage-service';
+import { Set, StorageService } from '../../providers/storage-service';
 
-export class Set {
-  left: number;
-  right: number;
-}
 
 @Component({
   templateUrl: 'play.html'

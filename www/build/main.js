@@ -81045,6 +81045,8 @@ var __decorate$109 = (undefined && undefined.__decorate) || function (decorators
 var __metadata$3 = (undefined && undefined.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+
+
 var StorageService = (function () {
     function StorageService() {
     }
@@ -81106,7 +81108,6 @@ var __decorate$108 = (undefined && undefined.__decorate) || function (decorators
 var __metadata$2 = (undefined && undefined.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-
 var PlayPage = (function () {
     function PlayPage(storageService) {
         this.storageService = storageService;
@@ -81268,10 +81269,21 @@ var HistoricPage = (function () {
         this.storageService.getHistoric()
             .then(function (data) {
             _this.items = data;
+            _this.sortByDateDescending();
         }, function (error) {
             console.log(error);
         });
     }
+    HistoricPage.prototype.sortByDateAscending = function () {
+        this.items = this.items.sort(function (a, b) {
+            return new Date(a.date).getTime() - new Date(b.date).getTime();
+        });
+    };
+    HistoricPage.prototype.sortByDateDescending = function () {
+        this.items = this.items.sort(function (a, b) {
+            return new Date(b.date).getTime() - new Date(a.date).getTime();
+        });
+    };
     HistoricPage.prototype.toLocaleDateString = function (d) {
         return (new Date(d)).toLocaleDateString();
     };
