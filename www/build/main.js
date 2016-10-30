@@ -81090,6 +81090,47 @@ var StorageService = (function () {
             console.log(err);
         });
     };
+    StorageService.prototype.getPlayers = function () {
+        return NativeStorage.getItem('players')
+            .then(function (data) {
+            return data;
+        }, function (error) {
+            NativeStorage.setItem('players', []);
+            console.error(error);
+        });
+    };
+    StorageService.prototype.savePlayer = function (player) {
+        NativeStorage.getItem('players')
+            .then(function (data) {
+            data.push(player);
+            NativeStorage.setItem('players', data).then(function (data) {
+                console.log('Stored');
+                console.log(data);
+            }, function (err) {
+                console.error(err);
+            });
+        }, function (err) {
+            NativeStorage.setItem('players', []);
+            console.log(err);
+        });
+    };
+    StorageService.prototype.deletePlayer = function (player) {
+        NativeStorage.getItem('players')
+            .then(function (data) {
+            data.filter(function (p) {
+                return p.name !== player.name;
+            });
+            NativeStorage.setItem('players', data).then(function (data) {
+                console.log('Stored');
+                console.log(data);
+            }, function (err) {
+                console.error(err);
+            });
+        }, function (err) {
+            NativeStorage.setItem('players', []);
+            console.log(err);
+        });
+    };
     StorageService = __decorate$109([
         Injectable(), 
         __metadata$3('design:paramtypes', [])
@@ -81307,12 +81348,39 @@ var __metadata$6 = (undefined && undefined.__metadata) || function (k, v) {
 };
 // import { ColorPickerService } from 'angular2-color-picker';
 var AddPlayerPage = (function () {
-    function AddPlayerPage() {
+    function AddPlayerPage(viewCtrl, storageService) {
+        this.viewCtrl = viewCtrl;
+        this.storageService = storageService;
+        this.available_colors = [];
+        for (var i = 0; i < 5; ++i)
+            this.available_colors.push(this.randomColor());
+        console.log(this.available_colors);
     }
+    AddPlayerPage.prototype.dismiss = function () {
+        this.viewCtrl.dismiss();
+    };
+    AddPlayerPage.prototype.selectColor = function (colorNum, colors) {
+        if (colors < 1)
+            colors = 1; // defaults to one color - avoid divide by zero
+        return "hsl(" + (colorNum * (360 / colors) % 360) + ",100%,50%)";
+    };
+    AddPlayerPage.prototype.randomColor = function () {
+        var color = this.selectColor(Math.floor(Math.random() * 10), 10);
+        return color;
+    };
+    AddPlayerPage.prototype.createPlayer = function () {
+        console.log(this.name);
+        console.log(this.color);
+        this.storageService.savePlayer({ name: this.name, color: this.color });
+        this.dismiss();
+    };
+    AddPlayerPage.prototype.formComplete = function () {
+        return !!this.name && !!this.color;
+    };
     AddPlayerPage = __decorate$112([
-        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/add-player/add-player.html"*/'<ion-content>\n    <ion-item>\n    <ion-label floating>Username</ion-label>\n    <ion-input type="text"></ion-input>\n  </ion-item>\n  \n  <!--<input [(colorPicker)]="color" [style.background]="color" [value]="color"/>-->\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/add-player/add-player.html"*/
+        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/add-player/add-player.html"*/'<ion-header>\n    <ion-toolbar>\n        <ion-title>\n            Add player\n        </ion-title>\n        <ion-buttons start>\n            <button ion-button (click)="dismiss()">\n            <span primary showWhen="ios">Cancel</span>\n            <ion-icon name="md-close" showWhen="android,windows"></ion-icon>\n            </button>\n        </ion-buttons>\n    </ion-toolbar>\n</ion-header>\n\n\n<ion-content>\n    <ion-item>\n        <ion-label floating>Username</ion-label>\n        <ion-input [(ngModel)]="name" type="text"></ion-input>\n    </ion-item>\n\n    <!--<input [(colorPicker)]="color" [style.background]="color" [value]="color"/>-->\n\n    <ion-list radio-group [(ngModel)]="color">\n        <ion-list-header>\n            Color\n        </ion-list-header>\n\n        <ion-item *ngFor="let a_color of available_colors">\n            <ion-label [style.background-color]="a_color">&nbsp; </ion-label>\n            <ion-radio value="{{a_color}}"></ion-radio>\n        </ion-item>\n    </ion-list>\n\n    <div padding>\n        <button (click)="createPlayer()" [disabled]="!formComplete()" ion-button block>Create</button>\n    </div>\n\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/add-player/add-player.html"*/
         }), 
-        __metadata$6('design:paramtypes', [])
+        __metadata$6('design:paramtypes', [ViewController, StorageService])
     ], AddPlayerPage);
     return AddPlayerPage;
 }());
@@ -81326,18 +81394,33 @@ var __decorate$111 = (undefined && undefined.__decorate) || function (decorators
 var __metadata$5 = (undefined && undefined.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+
 var PlayerPage = (function () {
-    function PlayerPage(modalCtrl) {
+    function PlayerPage(modalCtrl, storageService) {
         this.modalCtrl = modalCtrl;
+        this.storageService = storageService;
+        this.getPlayers();
     }
     PlayerPage.prototype.openModal = function () {
+        var _this = this;
         var modal = this.modalCtrl.create(AddPlayerPage);
         modal.present();
+        modal.onDidDismiss(function () {
+            _this.getPlayers();
+        });
+    };
+    PlayerPage.prototype.getPlayers = function () {
+        var _this = this;
+        this.storageService.getPlayers().then(function (data) {
+            _this.players = data;
+        }, function (error) {
+            console.log(error);
+        });
     };
     PlayerPage = __decorate$111([
-        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/player/player.html"*/'<ion-header>\n    <ion-navbar>\n        <button menuToggle ion-button icon-only>\n      <ion-icon name=\'menu\'></ion-icon>\n    </button>\n        <ion-title>Players</ion-title>\n    </ion-navbar>\n</ion-header>\n\n<ion-content>\n    <button ion-button (click)="openModal()">New player</button>\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/player/player.html"*/
+        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/player/player.html"*/'<ion-header>\n    <ion-navbar>\n        <button menuToggle ion-button icon-only>\n      <ion-icon name=\'menu\'></ion-icon>\n    </button>\n        <ion-title>Players</ion-title>\n    </ion-navbar>\n</ion-header>\n\n<ion-content>\n    <button ion-button (click)="openModal()" block icon-left>\n        <ion-icon name="ios-person-add-outline"></ion-icon>\n        New player\n    </button>\n\n    <ion-list>\n        <ion-item *ngFor="let player of players">\n            <p [style.color]="player.color">{{player.name}}</p>\n        </ion-item>\n    </ion-list>\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/player/player.html"*/
         }), 
-        __metadata$5('design:paramtypes', [ModalController])
+        __metadata$5('design:paramtypes', [ModalController, StorageService])
     ], PlayerPage);
     return PlayerPage;
 }());
@@ -81356,7 +81439,7 @@ var MyApp = (function () {
         this.platform = platform;
         this.menu = menu;
         // make HelloIonicPage the root (or first) page
-        this.rootPage = PlayPage;
+        this.rootPage = PlayerPage;
         this.initializeApp();
         // set our app's pages
         this.pages = [
