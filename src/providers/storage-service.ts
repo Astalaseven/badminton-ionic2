@@ -12,6 +12,23 @@ export class Game {
   date: Date;
 }
 
+export class Player {
+  name: string;
+  color: string;
+}
+
+export const DEFAULT_PLAYERS: Player[] = [
+  {
+    name: 'Player 1',
+    color: '#32db64'
+  },
+  {
+    name: 'Player 2',
+    color: '#f53d3d'
+  }
+];
+
+
 @Injectable()
 export class StorageService {
 
@@ -93,7 +110,26 @@ export class StorageService {
         return data;
       },
       error => {
-        NativeStorage.setItem('players', []);
+        NativeStorage.setItem('players', DEFAULT_PLAYERS);
+        console.error(error);
+      });
+  }
+
+  public getPlayer(name) {
+
+    return this.getPlayers()
+      .then(
+      data => {
+        console.log(data);
+        
+        let player = data.filter(function (obj) {
+          console.log(obj.name, name);
+          return obj.name === name;
+        });
+
+        return player;
+      },
+      error => {
         console.error(error);
       });
   }
@@ -116,7 +152,7 @@ export class StorageService {
           });
       },
       err => {
-        NativeStorage.setItem('players', []);
+        NativeStorage.setItem('players', DEFAULT_PLAYERS);
         console.log(err);
       }
       )
@@ -142,7 +178,7 @@ export class StorageService {
           });
       },
       err => {
-        NativeStorage.setItem('players', []);
+        NativeStorage.setItem('players', DEFAULT_PLAYERS);
         console.log(err);
       }
       )

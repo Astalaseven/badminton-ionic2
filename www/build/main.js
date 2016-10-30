@@ -81045,6 +81045,17 @@ var __metadata$3 = (undefined && undefined.__metadata) || function (k, v) {
 };
 
 
+
+var DEFAULT_PLAYERS = [
+    {
+        name: 'Player 1',
+        color: '#32db64'
+    },
+    {
+        name: 'Player 2',
+        color: '#f53d3d'
+    }
+];
 var StorageService = (function () {
     function StorageService() {
     }
@@ -81095,7 +81106,20 @@ var StorageService = (function () {
             .then(function (data) {
             return data;
         }, function (error) {
-            NativeStorage.setItem('players', []);
+            NativeStorage.setItem('players', DEFAULT_PLAYERS);
+            console.error(error);
+        });
+    };
+    StorageService.prototype.getPlayer = function (name) {
+        return this.getPlayers()
+            .then(function (data) {
+            console.log(data);
+            var player = data.filter(function (obj) {
+                console.log(obj.name, name);
+                return obj.name === name;
+            });
+            return player;
+        }, function (error) {
             console.error(error);
         });
     };
@@ -81110,7 +81134,7 @@ var StorageService = (function () {
                 console.error(err);
             });
         }, function (err) {
-            NativeStorage.setItem('players', []);
+            NativeStorage.setItem('players', DEFAULT_PLAYERS);
             console.log(err);
         });
     };
@@ -81127,7 +81151,7 @@ var StorageService = (function () {
                 console.error(err);
             });
         }, function (err) {
-            NativeStorage.setItem('players', []);
+            NativeStorage.setItem('players', DEFAULT_PLAYERS);
             console.log(err);
         });
     };
@@ -81148,8 +81172,11 @@ var __metadata$2 = (undefined && undefined.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var PlayPage = (function () {
-    function PlayPage(storageService) {
+    function PlayPage(storageService, alertCtrl) {
         this.storageService = storageService;
+        this.alertCtrl = alertCtrl;
+        this.player_one = DEFAULT_PLAYERS[0];
+        this.player_two = DEFAULT_PLAYERS[1];
         this.saved_states = [];
         this.set_no = 1;
         this.set_end = false;
@@ -81275,14 +81302,73 @@ var PlayPage = (function () {
         });
         return setsCopy;
     };
+    PlayPage.prototype.setHasStarted = function () {
+        return this.left_point !== 0 || this.right_point !== 0;
+    };
+    PlayPage.prototype.gameHasStarted = function () {
+        return this.set_no > 1 || this.setHasStarted();
+    };
+    PlayPage.prototype.choosePlayerOne = function () {
+        var _this = this;
+        var players = [];
+        this.storageService.getPlayers().then(function (data) {
+            players = data;
+            _this.openPopup(players, _this.player_one);
+        });
+    };
+    PlayPage.prototype.choosePlayerTwo = function () {
+        var _this = this;
+        var players = [];
+        this.storageService.getPlayers().then(function (data) {
+            players = data;
+            _this.openPopup(players, _this.player_two);
+        });
+    };
+    PlayPage.prototype.openPopup = function (players, player) {
+        var _this = this;
+        var inputs = [];
+        players.forEach(function (player) {
+            if (player.name !== _this.player_two.name && player.name !== _this.player_one.name)
+                inputs.push({ type: 'radio', label: player.name, value: player.name });
+        });
+        var alert = this.alertCtrl.create({
+            title: 'Choose a player',
+            inputs: inputs,
+            buttons: [
+                {
+                    text: 'Cancel',
+                    role: 'cancel',
+                    handler: function (data) {
+                        console.log('Cancel clicked');
+                    }
+                },
+                {
+                    text: 'Ok',
+                    handler: function (name) {
+                        console.log('player = data');
+                        console.log(name);
+                        _this.storageService.getPlayer(name).then(function (data) {
+                            console.log('getPlayer');
+                            console.log(data);
+                            player.name = data[0].name;
+                            player.color = data[0].color;
+                        });
+                        console.log(_this.player_one.name);
+                        console.log(_this.player_two.name);
+                    }
+                }
+            ]
+        });
+        alert.present();
+    };
     __decorate$108([
         ViewChild(Content), 
         __metadata$2('design:type', Content)
     ], PlayPage.prototype, "content", void 0);
     PlayPage = __decorate$108([
-        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/play/play.html"*/'<style>\n  h1 {\n    text-align: center;\n  }\n  \n  ion-col {\n    text-align: center;\n  }\n  \n  ion-grid {\n    padding: 0px;\n  }\n  \n  .big {\n    padding-top: 25vh;\n    padding-bottom: 25vh;\n  }\n  \n  .large {\n    font-size: 25vw;\n  }\n</style>\n\n<ion-content padding>\n\n  <h1>SET {{set_no}}</h1>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col>\n        <button class="big" (click)="leftScored()" [disabled]="set_end" ion-button large full color="secondary"><h1 class="large">{{left_point}}</h1></button>\n      </ion-col>\n\n      <ion-col>\n        <button class="big" (click)="rightScored()" [disabled]="set_end" ion-button large full color="danger"><h1 class="large">{{right_point}}</h1></button>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col width-30 *ngFor="let set of sets">\n        <ion-badge color="dark" item-right>{{set.left}} : {{set.right}}</ion-badge>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col width-33>\n        <button *ngIf="set_end && !game_end" (click)="newSet()" ion-button small full round>New set</button>\n        <button *ngIf="!set_end && !game_end" (click)="resetSet()" ion-button small full round>Reset set</button>\n      </ion-col>\n      <ion-col width-33>\n        <button *ngIf="game_end" (click)="resetAll()" ion-button small full round>New game</button>\n        <button *ngIf="!game_end" (click)="resetAll()" ion-button small full round>Reset all</button>\n      </ion-col>\n      <ion-col width-33>\n        <button [disabled]="!canUndo()" (click)="undo()" ion-button small full round>Undo</button>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <br />\n\n  <button ion-button small full round menuToggle>Open menu</button>\n\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/play/play.html"*/
+        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/play/play.html"*/'<style>\n  h1 {\n    text-align: center;\n  }\n  \n  ion-col {\n    text-align: center;\n  }\n  \n  ion-grid {\n    padding: 0px;\n  }\n  \n  .big {\n    padding-top: 25vh;\n    padding-bottom: 25vh;\n  }\n  \n  .large {\n    font-size: 25vw;\n  }\n</style>\n\n<ion-content padding>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col>\n        <button *ngIf="!gameHasStarted()" (click)="choosePlayerOne()" ion-button color="light">\n          {{player_one.name}}\n        </button>\n        <button *ngIf="gameHasStarted()" [clear]="true" [disabled]="true" (click)="choosePlayerOne()" ion-button color="dark">\n          {{player_one.name}}\n        </button>\n      </ion-col>\n      \n      <ion-col>\n        <h1>SET {{set_no}}</h1>\n      </ion-col>\n      \n      <ion-col>\n        <button *ngIf="!gameHasStarted()" (click)="choosePlayerTwo()" ion-button color="light">\n          {{player_two.name}}\n        </button>\n        <button *ngIf="gameHasStarted()" [clear]="true" [disabled]="true" (click)="choosePlayerTwo()" ion-button color="dark">\n          {{player_two.name}}\n        </button>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col>\n        <button class="big" (click)="leftScored()" [disabled]="set_end" ion-button large full [style.background-color]="player_one.color"><h1 class="large">{{left_point}}</h1></button>\n      </ion-col>\n\n      <ion-col>\n        <button class="big" (click)="rightScored()" [disabled]="set_end" ion-button large full [style.background-color]="player_two.color"><h1 class="large">{{right_point}}</h1></button>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col width-30 *ngFor="let set of sets">\n        <ion-badge color="dark" item-right>{{set.left}} : {{set.right}}</ion-badge>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col width-33>\n        <button *ngIf="set_end && !game_end" (click)="newSet()" color="secondary" ion-button small full round>New set</button>\n        <button *ngIf="!set_end && !game_end" [disabled]="!gameHasStarted()" (click)="resetSet()" ion-button small full round>Reset set</button>\n      </ion-col>\n      <ion-col width-33>\n        <button *ngIf="game_end" (click)="resetAll()" color="secondary" ion-button small full round>New game</button>\n        <button *ngIf="!game_end" [disabled]="!gameHasStarted()" (click)="resetAll()" ion-button small full round>Reset all</button>\n      </ion-col>\n      <ion-col width-33>\n        <button [disabled]="!canUndo()" (click)="undo()" color="dark" ion-button small full round>Undo</button>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <br />\n\n  <button ion-button small full round menuToggle>Open menu</button>\n\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/play/play.html"*/
         }), 
-        __metadata$2('design:paramtypes', [StorageService])
+        __metadata$2('design:paramtypes', [StorageService, AlertController])
     ], PlayPage);
     return PlayPage;
 }());
@@ -81394,7 +81480,6 @@ var __decorate$111 = (undefined && undefined.__decorate) || function (decorators
 var __metadata$5 = (undefined && undefined.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-
 var PlayerPage = (function () {
     function PlayerPage(modalCtrl, storageService) {
         this.modalCtrl = modalCtrl;
@@ -81418,7 +81503,7 @@ var PlayerPage = (function () {
         });
     };
     PlayerPage = __decorate$111([
-        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/player/player.html"*/'<ion-header>\n    <ion-navbar>\n        <button menuToggle ion-button icon-only>\n      <ion-icon name=\'menu\'></ion-icon>\n    </button>\n        <ion-title>Players</ion-title>\n    </ion-navbar>\n</ion-header>\n\n<ion-content>\n    <button ion-button (click)="openModal()" block icon-left>\n        <ion-icon name="ios-person-add-outline"></ion-icon>\n        New player\n    </button>\n\n    <ion-list>\n        <ion-item *ngFor="let player of players">\n            <p [style.color]="player.color">{{player.name}}</p>\n        </ion-item>\n    </ion-list>\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/player/player.html"*/
+        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/player/player.html"*/'<ion-header>\n    <ion-navbar>\n        <button menuToggle ion-button icon-only>\n      <ion-icon name=\'menu\'></ion-icon>\n    </button>\n        <ion-title>Players</ion-title>\n    </ion-navbar>\n</ion-header>\n\n<ion-content>\n    <button ion-button (click)="openModal()" full icon-left>\n        <ion-icon name="ios-person-add-outline"></ion-icon>\n        New player\n    </button>\n\n    <ion-list>\n        <ion-item *ngFor="let player of players">\n            <p [style.color]="player.color">{{player.name}}</p>\n        </ion-item>\n    </ion-list>\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/player/player.html"*/
         }), 
         __metadata$5('design:paramtypes', [ModalController, StorageService])
     ], PlayerPage);
@@ -81439,7 +81524,7 @@ var MyApp = (function () {
         this.platform = platform;
         this.menu = menu;
         // make HelloIonicPage the root (or first) page
-        this.rootPage = PlayerPage;
+        this.rootPage = PlayPage;
         this.initializeApp();
         // set our app's pages
         this.pages = [

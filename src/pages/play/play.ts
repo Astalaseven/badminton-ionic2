@@ -2,7 +2,9 @@ import { Component } from '@angular/core';
 import { ViewChild } from '@angular/core';
 import { Content } from 'ionic-angular';
 
-import { Set, StorageService } from '../../providers/storage-service';
+import { AlertController } from 'ionic-angular';
+
+import { Set, Player, DEFAULT_PLAYERS, StorageService } from '../../providers/storage-service';
 
 
 @Component({
@@ -16,6 +18,9 @@ export class PlayPage {
     left_point: number, right_point: number, sets: any[]
   }>;
 
+  player_one: Player;
+  player_two: Player;
+
   set_no: number;
   set_end: boolean;
   game_end: boolean;
@@ -25,7 +30,10 @@ export class PlayPage {
 
   sets: any[];
 
-  constructor(public storageService: StorageService) {
+  constructor(public storageService: StorageService, private alertCtrl: AlertController) {
+    
+    this.player_one = DEFAULT_PLAYERS[0];
+    this.player_two = DEFAULT_PLAYERS[1];
 
     this.saved_states = [];
 
@@ -220,5 +228,79 @@ export class PlayPage {
     )
 
     return setsCopy;
+  }
+  
+  public setHasStarted(): boolean {
+    
+    return this.left_point !== 0 || this.right_point !== 0;
+  }
+  
+  public gameHasStarted(): boolean {
+    
+    return this.set_no > 1 || this.setHasStarted();
+  }
+
+  public choosePlayerOne() {
+
+    let players: Player[] = [];
+
+    this.storageService.getPlayers().then(data => {
+      players = data;
+
+      this.openPopup(players, this.player_one);
+    });
+  }
+
+  public choosePlayerTwo() {
+
+    let players: Player[] = [];
+
+    this.storageService.getPlayers().then(data => {
+      players = data;
+
+      this.openPopup(players, this.player_two);
+    });
+  }
+
+  private openPopup(players, player) {
+
+    let inputs: Array<{ type: string, label: string, value: string }> = [];
+
+    players.forEach(player => {
+      if (player.name !== this.player_two.name && player.name !== this.player_one.name)
+        inputs.push({ type: 'radio', label: player.name, value: player.name });
+    });
+
+    let alert = this.alertCtrl.create({
+      title: 'Choose a player',
+      inputs: inputs,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: data => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Ok',
+          handler: name => {
+            console.log('player = data');
+            console.log(name);
+            
+            this.storageService.getPlayer(name).then(data => {
+              console.log('getPlayer');
+              console.log(data);
+              player.name = data[0].name;
+              player.color = data[0].color;
+            });
+            
+            console.log(this.player_one.name);
+            console.log(this.player_two.name);
+          }
+        }
+      ]
+    });
+    alert.present();
   }
 }
