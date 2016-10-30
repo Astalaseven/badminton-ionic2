@@ -1,6 +1,4 @@
 (function () {
-'use strict';
-
 var global$1 = typeof global !== "undefined" ? global :
             typeof self !== "undefined" ? self :
             typeof window !== "undefined" ? window : {};
@@ -81298,6 +81296,52 @@ var HistoricPage = (function () {
     return HistoricPage;
 }());
 
+var __decorate$112 = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata$6 = (undefined && undefined.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+// import { ColorPickerService } from 'angular2-color-picker';
+var AddPlayerPage = (function () {
+    function AddPlayerPage() {
+    }
+    AddPlayerPage = __decorate$112([
+        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/add-player/add-player.html"*/'<ion-content>\n    <ion-item>\n    <ion-label floating>Username</ion-label>\n    <ion-input type="text"></ion-input>\n  </ion-item>\n  \n  <!--<input [(colorPicker)]="color" [style.background]="color" [value]="color"/>-->\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/add-player/add-player.html"*/
+        }), 
+        __metadata$6('design:paramtypes', [])
+    ], AddPlayerPage);
+    return AddPlayerPage;
+}());
+
+var __decorate$111 = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata$5 = (undefined && undefined.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var PlayerPage = (function () {
+    function PlayerPage(modalCtrl) {
+        this.modalCtrl = modalCtrl;
+    }
+    PlayerPage.prototype.openModal = function () {
+        var modal = this.modalCtrl.create(AddPlayerPage);
+        modal.present();
+    };
+    PlayerPage = __decorate$111([
+        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/player/player.html"*/'<ion-header>\n    <ion-navbar>\n        <button menuToggle ion-button icon-only>\n      <ion-icon name=\'menu\'></ion-icon>\n    </button>\n        <ion-title>Players</ion-title>\n    </ion-navbar>\n</ion-header>\n\n<ion-content>\n    <button ion-button (click)="openModal()">New player</button>\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/player/player.html"*/
+        }), 
+        __metadata$5('design:paramtypes', [ModalController])
+    ], PlayerPage);
+    return PlayerPage;
+}());
+
 var __decorate$1 = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -81317,7 +81361,8 @@ var MyApp = (function () {
         // set our app's pages
         this.pages = [
             { title: 'Let\'s play!', component: PlayPage },
-            { title: 'Historic', component: HistoricPage }
+            { title: 'Historic', component: HistoricPage },
+            { title: 'Players', component: PlayerPage }
         ];
     }
     MyApp.prototype.initializeApp = function () {
@@ -81345,30 +81390,6 @@ var MyApp = (function () {
     return MyApp;
 }());
 
-var __decorate$111 = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata$5 = (undefined && undefined.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var ItemDetailsPage = (function () {
-    function ItemDetailsPage(navCtrl, navParams) {
-        this.navCtrl = navCtrl;
-        this.navParams = navParams;
-        // If we navigated to this page, we will have an item available as a nav param
-        this.selectedItem = navParams.get('item');
-    }
-    ItemDetailsPage = __decorate$111([
-        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/item-details/item-details.html"*/'<ion-header>\n  <ion-navbar>\n    <button menuToggle *ngIf="!selectedItem">\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>Item Details</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content>\n <div *ngIf="selectedItem" class="selection">\n    <b>{{selectedItem.title}}</b>\n    <ion-icon name="{{selectedItem.icon}}"></ion-icon>\n    <div>\n      You navigated here from <b>{{selectedItem.title}}</b>\n    </div>\n  </div>\n</ion-content>\n'/*ion-inline-end:"/home/asta/badminton/src/pages/item-details/item-details.html"*/
-        }), 
-        __metadata$5('design:paramtypes', [NavController, NavParams])
-    ], ItemDetailsPage);
-    return ItemDetailsPage;
-}());
-
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -81386,17 +81407,19 @@ var AppModule = (function () {
             declarations: [
                 MyApp,
                 PlayPage,
-                ItemDetailsPage,
+                PlayerPage,
+                AddPlayerPage,
                 HistoricPage
             ],
             imports: [
-                IonicModule.forRoot(MyApp)
+                IonicModule.forRoot(MyApp),
             ],
             bootstrap: [IonicApp],
             entryComponents: [
                 MyApp,
                 PlayPage,
-                ItemDetailsPage,
+                PlayerPage,
+                AddPlayerPage,
                 HistoricPage
             ],
             providers: [StorageService]

@@ -6,6 +6,7 @@ import { StatusBar } from 'ionic-native';
 
 import { PlayPage } from '../pages/play/play';
 import { HistoricPage } from '../pages/historic/historic';
+import { PlayerPage } from '../pages/player/player';
 
 
 @Component({
@@ -27,7 +28,8 @@ export class MyApp {
     // set our app's pages
     this.pages = [
       { title: 'Let\'s play!', component: PlayPage },
-      { title: 'Historic', component: HistoricPage }
+      { title: 'Historic', component: HistoricPage },
+      { title: 'Players', component: PlayerPage }
     ];
   }
 
