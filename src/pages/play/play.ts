@@ -31,7 +31,7 @@ export class PlayPage {
   sets: any[];
 
   constructor(public storageService: StorageService, private alertCtrl: AlertController) {
-    
+
     this.player_one = DEFAULT_PLAYERS[0];
     this.player_two = DEFAULT_PLAYERS[1];
 
@@ -229,14 +229,14 @@ export class PlayPage {
 
     return setsCopy;
   }
-  
+
   public setHasStarted(): boolean {
-    
+
     return this.left_point !== 0 || this.right_point !== 0;
   }
-  
+
   public gameHasStarted(): boolean {
-    
+
     return this.set_no > 1 || this.setHasStarted();
   }
 
@@ -287,14 +287,14 @@ export class PlayPage {
           handler: name => {
             console.log('player = data');
             console.log(name);
-            
+
             this.storageService.getPlayer(name).then(data => {
               console.log('getPlayer');
               console.log(data);
               player.name = data[0].name;
               player.color = data[0].color;
             });
-            
+
             console.log(this.player_one.name);
             console.log(this.player_two.name);
           }

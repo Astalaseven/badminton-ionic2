@@ -1,4 +1,6 @@
 (function () {
+'use strict';
+
 var global$1 = typeof global !== "undefined" ? global :
             typeof self !== "undefined" ? self :
             typeof window !== "undefined" ? window : {};
@@ -81374,7 +81376,7 @@ var PlayPage = (function () {
         __metadata$2('design:type', Content)
     ], PlayPage.prototype, "content", void 0);
     PlayPage = __decorate$108([
-        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/play/play.html"*/'<style>\n  h1 {\n    text-align: center;\n  }\n  \n  ion-col {\n    text-align: center;\n  }\n  \n  ion-grid {\n    padding: 0px;\n  }\n  \n  .big {\n    padding-top: 25vh;\n    padding-bottom: 25vh;\n  }\n  \n  .large {\n    font-size: 25vw;\n  }\n</style>\n\n<ion-content padding>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col>\n        <button [disabled]="gameHasStarted()" (click)="choosePlayerOne()" ion-button clear round color="dark">\n          {{player_one.name}}\n        </button>\n      </ion-col>\n      \n      <ion-col>\n        <h1>SET {{set_no}}</h1>\n      </ion-col>\n      \n      <ion-col>\n        <button [disabled]="gameHasStarted()" (click)="choosePlayerTwo()" ion-button clear round color="dark">\n          {{player_two.name}}\n        </button>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col>\n        <button class="big" (click)="leftScored()" [disabled]="set_end" ion-button large full [style.background-color]="player_one.color"><h1 class="large">{{left_point}}</h1></button>\n      </ion-col>\n\n      <ion-col>\n        <button class="big" (click)="rightScored()" [disabled]="set_end" ion-button large full [style.background-color]="player_two.color"><h1 class="large">{{right_point}}</h1></button>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col width-33 *ngFor="let set of sets">\n        <ion-badge color="dark" item-right>{{set.left}} : {{set.right}}</ion-badge>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col width-33>\n        <button *ngIf="set_end && !game_end" (click)="newSet()" color="secondary" ion-button small full round>New set</button>\n        <button *ngIf="!set_end && !game_end" [disabled]="!gameHasStarted()" (click)="resetSet()" ion-button small full round>Reset set</button>\n      </ion-col>\n      <ion-col width-33>\n        <button *ngIf="game_end" (click)="resetAll()" color="secondary" ion-button small full round>New game</button>\n        <button *ngIf="!game_end" [disabled]="!gameHasStarted()" (click)="resetAll()" ion-button small full round>Reset all</button>\n      </ion-col>\n      <ion-col width-33>\n        <button [disabled]="!canUndo()" (click)="undo()" color="dark" ion-button small full round>Undo</button>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <br />\n\n  <button ion-button small full round menuToggle>Open menu</button>\n\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/play/play.html"*/
+        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/play/play.html"*/'<style>\n  h1 {\n    text-align: center;\n  }\n  \n  ion-col {\n    text-align: center;\n  }\n  \n  ion-grid {\n    padding: 0px;\n  }\n  \n  .big {\n    padding-top: 25vh;\n    padding-bottom: 25vh;\n  }\n  \n  .large {\n    font-size: 25vw;\n  }\n</style>\n\n<ion-content padding>\n  <ion-grid>\n    <ion-row center>\n      <ion-col>\n        <button [disabled]="gameHasStarted()" (click)="choosePlayerOne()" ion-button clear round color="dark">\n          {{player_one.name}}\n        </button>\n      </ion-col>\n      \n      <ion-col>\n        <h1>SET {{set_no}}</h1>\n      </ion-col>\n      \n      <ion-col>\n        <button [disabled]="gameHasStarted()" (click)="choosePlayerTwo()" ion-button clear round color="dark">\n          {{player_two.name}}\n        </button>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col>\n        <button class="big" (click)="leftScored()" [disabled]="set_end" ion-button large full [style.background-color]="player_one.color"><h1 class="large">{{left_point}}</h1></button>\n      </ion-col>\n\n      <ion-col>\n        <button class="big" (click)="rightScored()" [disabled]="set_end" ion-button large full [style.background-color]="player_two.color"><h1 class="large">{{right_point}}</h1></button>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col width-33 *ngFor="let set of sets">\n        <ion-badge color="dark" item-right>{{set.left}} : {{set.right}}</ion-badge>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col width-33>\n        <button *ngIf="set_end && !game_end" (click)="newSet()" color="secondary" ion-button small full round>New set</button>\n        <button *ngIf="!set_end && !game_end" [disabled]="!gameHasStarted()" (click)="resetSet()" ion-button small full round>Reset set</button>\n      </ion-col>\n      <ion-col width-33>\n        <button *ngIf="game_end" (click)="resetAll()" color="secondary" ion-button small full round>New game</button>\n        <button *ngIf="!game_end" [disabled]="!gameHasStarted()" (click)="resetAll()" ion-button small full round>Reset all</button>\n      </ion-col>\n      <ion-col width-33>\n        <button [disabled]="!canUndo()" (click)="undo()" color="dark" ion-button small full round>Undo</button>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <br />\n\n  <button ion-button small full round menuToggle>Open menu</button>\n\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/play/play.html"*/
         }), 
         __metadata$2('design:paramtypes', [StorageService, AlertController])
     ], PlayPage);
@@ -81472,28 +81474,30 @@ var __decorate$112 = (undefined && undefined.__decorate) || function (decorators
 var __metadata$6 = (undefined && undefined.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-// import { ColorPickerService } from 'angular2-color-picker';
 var AddPlayerPage = (function () {
     function AddPlayerPage(viewCtrl, storageService) {
         this.viewCtrl = viewCtrl;
         this.storageService = storageService;
         this.available_colors = [];
-        for (var i = 0; i < 5; ++i)
-            this.available_colors.push(this.randomColor());
+        for (var i = 0; i < 5; ++i) {
+            var color = randomColor();
+            console.log(color);
+            this.available_colors.push(color);
+        }
         console.log(this.available_colors);
     }
     AddPlayerPage.prototype.dismiss = function () {
         this.viewCtrl.dismiss();
     };
-    AddPlayerPage.prototype.selectColor = function (colorNum, colors) {
-        if (colors < 1)
-            colors = 1; // defaults to one color - avoid divide by zero
-        return "hsl(" + (colorNum * (360 / colors) % 360) + ",100%,50%)";
-    };
-    AddPlayerPage.prototype.randomColor = function () {
-        var color = this.selectColor(Math.floor(Math.random() * 10), 10);
-        return color;
-    };
+    // private selectColor(colorNum, colors) {
+    //     if (colors < 1)
+    //         colors = 1; // defaults to one color - avoid divide by zero
+    //     return "hsl(" + (colorNum * (360 / colors) % 360) + ",100%,50%)";
+    // }
+    // public randomColor() {
+    //     let color = this.selectColor(Math.floor(Math.random() * 10), 10);
+    //     return color;
+    // }
     AddPlayerPage.prototype.createPlayer = function () {
         console.log(this.name);
         console.log(this.color);
