@@ -35,7 +35,8 @@ export const DEFAULT_PLAYERS: Player[] = [
 export class StorageService {
 
   constructor() {
-
+    this.getHistoric();
+    this.getPlayers();
   }
 
   public getHistoric() {

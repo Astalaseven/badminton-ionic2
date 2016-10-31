@@ -81060,6 +81060,8 @@ var DEFAULT_PLAYERS = [
 ];
 var StorageService = (function () {
     function StorageService() {
+        this.getHistoric();
+        this.getPlayers();
     }
     StorageService.prototype.getHistoric = function () {
         return NativeStorage.getItem('historic')
@@ -81481,23 +81483,12 @@ var AddPlayerPage = (function () {
         this.available_colors = [];
         for (var i = 0; i < 5; ++i) {
             var color = randomColor();
-            console.log(color);
             this.available_colors.push(color);
         }
-        console.log(this.available_colors);
     }
     AddPlayerPage.prototype.dismiss = function () {
         this.viewCtrl.dismiss();
     };
-    // private selectColor(colorNum, colors) {
-    //     if (colors < 1)
-    //         colors = 1; // defaults to one color - avoid divide by zero
-    //     return "hsl(" + (colorNum * (360 / colors) % 360) + ",100%,50%)";
-    // }
-    // public randomColor() {
-    //     let color = this.selectColor(Math.floor(Math.random() * 10), 10);
-    //     return color;
-    // }
     AddPlayerPage.prototype.createPlayer = function () {
         console.log(this.name);
         console.log(this.color);
@@ -81508,7 +81499,7 @@ var AddPlayerPage = (function () {
         return !!this.name && !!this.color;
     };
     AddPlayerPage = __decorate$112([
-        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/add-player/add-player.html"*/'<ion-header>\n    <ion-toolbar>\n        <ion-title>\n            Add player\n        </ion-title>\n        <ion-buttons start>\n            <button ion-button (click)="dismiss()">\n            <span primary showWhen="ios">Cancel</span>\n            <ion-icon name="md-close" showWhen="android,windows"></ion-icon>\n            </button>\n        </ion-buttons>\n    </ion-toolbar>\n</ion-header>\n\n\n<ion-content>\n    <ion-item>\n        <ion-label floating>Username</ion-label>\n        <ion-input [(ngModel)]="name" type="text"></ion-input>\n    </ion-item>\n\n    <!--<input [(colorPicker)]="color" [style.background]="color" [value]="color"/>-->\n\n    <ion-list radio-group [(ngModel)]="color">\n        <ion-list-header>\n            Color\n        </ion-list-header>\n\n        <ion-item *ngFor="let a_color of available_colors">\n            <ion-label [style.background-color]="a_color">&nbsp; </ion-label>\n            <ion-radio value="{{a_color}}"></ion-radio>\n        </ion-item>\n    </ion-list>\n\n    <div padding>\n        <button (click)="createPlayer()" [disabled]="!formComplete()" ion-button block>Create</button>\n    </div>\n\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/add-player/add-player.html"*/
+        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/add-player/add-player.html"*/'<ion-header>\n    <ion-toolbar>\n        <ion-title>\n            Add player\n        </ion-title>\n        <ion-buttons start>\n            <button ion-button (click)="dismiss()">\n            <span primary showWhen="ios">Cancel</span>\n            <ion-icon name="md-close" showWhen="android,windows"></ion-icon>\n            </button>\n        </ion-buttons>\n    </ion-toolbar>\n</ion-header>\n\n\n<ion-content>\n    <ion-item>\n        <ion-label floating>Username</ion-label>\n        <ion-input [(ngModel)]="name" type="text"></ion-input>\n    </ion-item>\n\n    <ion-list radio-group [(ngModel)]="color">\n        <ion-list-header>\n            Color\n        </ion-list-header>\n\n        <ion-item *ngFor="let a_color of available_colors">\n            <ion-label [style.background-color]="a_color">&nbsp;</ion-label>\n            <ion-radio value="{{a_color}}"></ion-radio>\n        </ion-item>\n    </ion-list>\n\n    <div padding>\n        <button (click)="createPlayer()" [disabled]="!formComplete()" ion-button block>Create</button>\n    </div>\n\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/add-player/add-player.html"*/
         }), 
         __metadata$6('design:paramtypes', [ViewController, StorageService])
     ], AddPlayerPage);
@@ -81572,9 +81563,9 @@ var MyApp = (function () {
         this.initializeApp();
         // set our app's pages
         this.pages = [
-            { title: 'Let\'s play!', component: PlayPage },
-            { title: 'Historic', component: HistoricPage },
-            { title: 'Players', component: PlayerPage }
+            { title: 'Let\'s play!', component: PlayPage, icon: 'ios-tennisball-outline' },
+            { title: 'Historic', component: HistoricPage, icon: 'ios-archive-outline' },
+            { title: 'Players', component: PlayerPage, icon: 'ios-person-outline' }
         ];
     }
     MyApp.prototype.initializeApp = function () {
@@ -81595,7 +81586,7 @@ var MyApp = (function () {
         __metadata$1('design:type', Nav)
     ], MyApp.prototype, "nav", void 0);
     MyApp = __decorate$1([
-        Component({template:/*ion-inline-start:"/home/asta/badminton/src/app/app.html"*/'<ion-menu [content]="content">\n\n  <ion-header>\n    <ion-toolbar>\n      <ion-title>Badminton</ion-title>\n    </ion-toolbar>\n  </ion-header>\n\n  <ion-content>\n    <ion-list>\n      <button ion-item *ngFor="let p of pages" (click)="openPage(p)">\n        {{p.title}}\n      </button>\n    </ion-list>\n  </ion-content>\n\n</ion-menu>\n\n<ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>\n'/*ion-inline-end:"/home/asta/badminton/src/app/app.html"*/
+        Component({template:/*ion-inline-start:"/home/asta/badminton/src/app/app.html"*/'<ion-menu [content]="content">\n\n  <ion-header>\n    <ion-toolbar>\n      <ion-title>Badminton</ion-title>\n    </ion-toolbar>\n  </ion-header>\n\n  <ion-content>\n    <ion-list>\n      <button ion-item icon-left *ngFor="let p of pages" (click)="openPage(p)">\n        <ion-icon name="{{p.icon}}"></ion-icon>\n        <label>{{p.title}}</label>\n      </button>\n    </ion-list>\n  </ion-content>\n\n</ion-menu>\n\n<ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>\n'/*ion-inline-end:"/home/asta/badminton/src/app/app.html"*/
         }), 
         __metadata$1('design:paramtypes', [Platform, MenuController])
     ], MyApp);

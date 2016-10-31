@@ -17,7 +17,7 @@ export class MyApp {
 
   // make HelloIonicPage the root (or first) page
   rootPage: any = PlayPage;
-  pages: Array<{title: string, component: any}>;
+  pages: Array<{title: string, component: any, icon: string}>;
 
   constructor(
     public platform: Platform,
@@ -27,9 +27,9 @@ export class MyApp {
 
     // set our app's pages
     this.pages = [
-      { title: 'Let\'s play!', component: PlayPage },
-      { title: 'Historic', component: HistoricPage },
-      { title: 'Players', component: PlayerPage }
+      { title: 'Let\'s play!', component: PlayPage, icon: 'ios-tennisball-outline' },
+      { title: 'Historic', component: HistoricPage, icon: 'ios-archive-outline' },
+      { title: 'Players', component: PlayerPage, icon: 'ios-person-outline' }
     ];
   }
 
