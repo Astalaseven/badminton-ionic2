@@ -8,6 +8,8 @@ export class Set {
 }
 
 export class Game {
+  player_one: Player;
+  player_two: Player;
   sets: Set[];
   date: Date;
 }
@@ -49,7 +51,7 @@ export class StorageService {
       });
   }
 
-  public saveHistoric(sets) {
+  public saveHistoric(sets, player_one, player_two) {
 
     NativeStorage.getItem('historic')
       .then(
@@ -57,6 +59,8 @@ export class StorageService {
 
         data.push(
           {
+            'player_one': player_one,
+            'player_two': player_two,
             'sets': sets,
             'date': new Date(),
           }
@@ -64,7 +68,7 @@ export class StorageService {
 
         NativeStorage.setItem('historic', data).then(
           (data) => {
-            console.log('Stored');
+            console.log('Game stored');
             console.log(data);
           },
           err => {
@@ -76,6 +80,18 @@ export class StorageService {
         console.log(err);
       }
       )
+  }
+
+  public clearHistoric() {
+
+    NativeStorage.setItem('historic', []).then(
+      (data) => {
+        console.log('Historic cleared');
+        console.log(data);
+      },
+      err => {
+        console.error(err);
+      });
   }
 
   public undoSaveHistoric() {
@@ -120,10 +136,9 @@ export class StorageService {
     return this.getPlayers()
       .then(
       data => {
-        console.log(data);
-        
+
         let player = data.filter(function (obj) {
-          console.log(obj.name, name);
+          
           return obj.name === name;
         });
 
@@ -144,7 +159,7 @@ export class StorageService {
 
         NativeStorage.setItem('players', data).then(
           (data) => {
-            console.log('Stored');
+            console.log('Player saved');
             console.log(data);
           },
           err => {
@@ -165,12 +180,13 @@ export class StorageService {
       data => {
 
         data.filter(function (p) {
+          
           return p.name !== player.name;
         });
 
         NativeStorage.setItem('players', data).then(
           (data) => {
-            console.log('Stored');
+            console.log('Player deleted');
             console.log(data);
           },
           err => {

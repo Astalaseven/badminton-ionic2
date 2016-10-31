@@ -14,20 +14,45 @@
       <button ion-button (click)="toggleSort()">
         <ion-icon name="ios-funnel-outline"></ion-icon>
       </button>
+      <button ion-button (click)="clearHistoric()" color="danger">
+        <ion-icon name="ios-trash-outline"></ion-icon>
+      </button>
     </ion-buttons>
   </ion-navbar>
 </ion-header>
 
+<style>
+  ion-col {
+    text-align: center;
+  }
+</style>
+
 <ion-content>
   <ion-list>
-    <ion-card *ngFor="let item of items">
+    <ion-card *ngFor="let game of games">
       <ion-item>
-        <ion-row center>
-          <ion-col *ngFor="let set of item.sets">
-            <ion-badge color="dark" item-right>{{set.left}} : {{set.right}}</ion-badge>
-          </ion-col>
-        </ion-row>
-        <p>{{toLocaleDateString(item.date)}} - {{toLocaleTimeString(item.date)}}</p>
+        <ion-grid>
+          <ion-row center *ngIf="game.player_one">
+            <ion-col width-33>
+              <h1>{{game.player_one.name}}</h1>
+            </ion-col>
+            <ion-col width-33 style="text-align: center;">
+              vs
+            </ion-col>
+            <ion-col width-33>
+              <h1>{{game.player_two.name}}</h1>
+            </ion-col>
+          </ion-row>
+          <ion-row center>
+            <ion-col width-33 *ngFor="let set of game.sets">
+              <ion-badge color="dark" item-right>
+                <span [style.font-weight]="winner(set.left, set.right) ? 'bold' : 'normal'">{{set.left}}</span> :
+                <span [style.font-weight]="winner(set.right, set.left) ? 'bold' : 'normal'">{{set.right}}</span>
+              </ion-badge>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        <p>{{toLocaleDateString(game.date)}} - {{toLocaleTimeString(game.date)}}</p>
       </ion-item>
     </ion-card>
   </ion-list>

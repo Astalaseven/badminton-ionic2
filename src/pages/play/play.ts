@@ -127,7 +127,7 @@ export class PlayPage {
     if (this.set_no === 3) {
 
       this.game_end = true;
-      this.storageService.saveHistoric(this.sets);
+      this.storageService.saveHistoric(this.sets, this.player_one, this.player_two);
     }
   }
 

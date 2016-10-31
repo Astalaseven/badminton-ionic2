@@ -81068,15 +81068,17 @@ var StorageService = (function () {
             console.error(error);
         });
     };
-    StorageService.prototype.saveHistoric = function (sets) {
+    StorageService.prototype.saveHistoric = function (sets, player_one, player_two) {
         NativeStorage.getItem('historic')
             .then(function (data) {
             data.push({
+                'player_one': player_one,
+                'player_two': player_two,
                 'sets': sets,
                 'date': new Date(),
             });
             NativeStorage.setItem('historic', data).then(function (data) {
-                console.log('Stored');
+                console.log('Game stored');
                 console.log(data);
             }, function (err) {
                 console.error(err);
@@ -81084,6 +81086,14 @@ var StorageService = (function () {
         }, function (err) {
             NativeStorage.setItem('historic', []);
             console.log(err);
+        });
+    };
+    StorageService.prototype.clearHistoric = function () {
+        NativeStorage.setItem('historic', []).then(function (data) {
+            console.log('Historic cleared');
+            console.log(data);
+        }, function (err) {
+            console.error(err);
         });
     };
     StorageService.prototype.undoSaveHistoric = function () {
@@ -81113,9 +81123,7 @@ var StorageService = (function () {
     StorageService.prototype.getPlayer = function (name) {
         return this.getPlayers()
             .then(function (data) {
-            console.log(data);
             var player = data.filter(function (obj) {
-                console.log(obj.name, name);
                 return obj.name === name;
             });
             return player;
@@ -81128,7 +81136,7 @@ var StorageService = (function () {
             .then(function (data) {
             data.push(player);
             NativeStorage.setItem('players', data).then(function (data) {
-                console.log('Stored');
+                console.log('Player saved');
                 console.log(data);
             }, function (err) {
                 console.error(err);
@@ -81145,7 +81153,7 @@ var StorageService = (function () {
                 return p.name !== player.name;
             });
             NativeStorage.setItem('players', data).then(function (data) {
-                console.log('Stored');
+                console.log('Player deleted');
                 console.log(data);
             }, function (err) {
                 console.error(err);
@@ -81235,7 +81243,7 @@ var PlayPage = (function () {
         });
         if (this.set_no === 3) {
             this.game_end = true;
-            this.storageService.saveHistoric(this.sets);
+            this.storageService.saveHistoric(this.sets, this.player_one, this.player_two);
         }
     };
     PlayPage.prototype.checkFinished = function () {
@@ -81366,7 +81374,7 @@ var PlayPage = (function () {
         __metadata$2('design:type', Content)
     ], PlayPage.prototype, "content", void 0);
     PlayPage = __decorate$108([
-        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/play/play.html"*/'<style>\n  h1 {\n    text-align: center;\n  }\n  \n  ion-col {\n    text-align: center;\n  }\n  \n  ion-grid {\n    padding: 0px;\n  }\n  \n  .big {\n    padding-top: 25vh;\n    padding-bottom: 25vh;\n  }\n  \n  .large {\n    font-size: 25vw;\n  }\n</style>\n\n<ion-content padding>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col>\n        <button *ngIf="!gameHasStarted()" (click)="choosePlayerOne()" ion-button color="light">\n          {{player_one.name}}\n        </button>\n        <button *ngIf="gameHasStarted()" [clear]="true" [disabled]="true" (click)="choosePlayerOne()" ion-button color="dark">\n          {{player_one.name}}\n        </button>\n      </ion-col>\n      \n      <ion-col>\n        <h1>SET {{set_no}}</h1>\n      </ion-col>\n      \n      <ion-col>\n        <button *ngIf="!gameHasStarted()" (click)="choosePlayerTwo()" ion-button color="light">\n          {{player_two.name}}\n        </button>\n        <button *ngIf="gameHasStarted()" [clear]="true" [disabled]="true" (click)="choosePlayerTwo()" ion-button color="dark">\n          {{player_two.name}}\n        </button>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col>\n        <button class="big" (click)="leftScored()" [disabled]="set_end" ion-button large full [style.background-color]="player_one.color"><h1 class="large">{{left_point}}</h1></button>\n      </ion-col>\n\n      <ion-col>\n        <button class="big" (click)="rightScored()" [disabled]="set_end" ion-button large full [style.background-color]="player_two.color"><h1 class="large">{{right_point}}</h1></button>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col width-30 *ngFor="let set of sets">\n        <ion-badge color="dark" item-right>{{set.left}} : {{set.right}}</ion-badge>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col width-33>\n        <button *ngIf="set_end && !game_end" (click)="newSet()" color="secondary" ion-button small full round>New set</button>\n        <button *ngIf="!set_end && !game_end" [disabled]="!gameHasStarted()" (click)="resetSet()" ion-button small full round>Reset set</button>\n      </ion-col>\n      <ion-col width-33>\n        <button *ngIf="game_end" (click)="resetAll()" color="secondary" ion-button small full round>New game</button>\n        <button *ngIf="!game_end" [disabled]="!gameHasStarted()" (click)="resetAll()" ion-button small full round>Reset all</button>\n      </ion-col>\n      <ion-col width-33>\n        <button [disabled]="!canUndo()" (click)="undo()" color="dark" ion-button small full round>Undo</button>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <br />\n\n  <button ion-button small full round menuToggle>Open menu</button>\n\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/play/play.html"*/
+        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/play/play.html"*/'<style>\n  h1 {\n    text-align: center;\n  }\n  \n  ion-col {\n    text-align: center;\n  }\n  \n  ion-grid {\n    padding: 0px;\n  }\n  \n  .big {\n    padding-top: 25vh;\n    padding-bottom: 25vh;\n  }\n  \n  .large {\n    font-size: 25vw;\n  }\n</style>\n\n<ion-content padding>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col>\n        <button [disabled]="gameHasStarted()" (click)="choosePlayerOne()" ion-button clear round color="dark">\n          {{player_one.name}}\n        </button>\n      </ion-col>\n      \n      <ion-col>\n        <h1>SET {{set_no}}</h1>\n      </ion-col>\n      \n      <ion-col>\n        <button [disabled]="gameHasStarted()" (click)="choosePlayerTwo()" ion-button clear round color="dark">\n          {{player_two.name}}\n        </button>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col>\n        <button class="big" (click)="leftScored()" [disabled]="set_end" ion-button large full [style.background-color]="player_one.color"><h1 class="large">{{left_point}}</h1></button>\n      </ion-col>\n\n      <ion-col>\n        <button class="big" (click)="rightScored()" [disabled]="set_end" ion-button large full [style.background-color]="player_two.color"><h1 class="large">{{right_point}}</h1></button>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col width-33 *ngFor="let set of sets">\n        <ion-badge color="dark" item-right>{{set.left}} : {{set.right}}</ion-badge>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <ion-grid>\n    <ion-row center>\n      <ion-col width-33>\n        <button *ngIf="set_end && !game_end" (click)="newSet()" color="secondary" ion-button small full round>New set</button>\n        <button *ngIf="!set_end && !game_end" [disabled]="!gameHasStarted()" (click)="resetSet()" ion-button small full round>Reset set</button>\n      </ion-col>\n      <ion-col width-33>\n        <button *ngIf="game_end" (click)="resetAll()" color="secondary" ion-button small full round>New game</button>\n        <button *ngIf="!game_end" [disabled]="!gameHasStarted()" (click)="resetAll()" ion-button small full round>Reset all</button>\n      </ion-col>\n      <ion-col width-33>\n        <button [disabled]="!canUndo()" (click)="undo()" color="dark" ion-button small full round>Undo</button>\n      </ion-col>\n    </ion-row>\n  </ion-grid>\n\n  <br />\n\n  <button ion-button small full round menuToggle>Open menu</button>\n\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/play/play.html"*/
         }), 
         __metadata$2('design:paramtypes', [StorageService, AlertController])
     ], PlayPage);
@@ -81383,31 +81391,60 @@ var __metadata$4 = (undefined && undefined.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var HistoricPage = (function () {
-    function HistoricPage(storageService) {
-        var _this = this;
+    function HistoricPage(storageService, alertCtrl) {
         this.storageService = storageService;
+        this.alertCtrl = alertCtrl;
+        this.showGames();
+    }
+    HistoricPage.prototype.showGames = function () {
+        var _this = this;
         this.storageService.getHistoric()
             .then(function (data) {
-            _this.items = data;
+            _this.games = data;
             _this.sortByDateDescending();
         }, function (error) {
             console.log(error);
         });
-    }
+    };
     HistoricPage.prototype.toggleSort = function () {
         this.toggle_sort();
     };
     HistoricPage.prototype.sortByDateAscending = function () {
-        this.items = this.items.sort(function (a, b) {
+        this.games = this.games.sort(function (a, b) {
             return new Date(a.date).getTime() - new Date(b.date).getTime();
         });
         this.toggle_sort = this.sortByDateDescending;
     };
     HistoricPage.prototype.sortByDateDescending = function () {
-        this.items = this.items.sort(function (a, b) {
+        this.games = this.games.sort(function (a, b) {
             return new Date(b.date).getTime() - new Date(a.date).getTime();
         });
         this.toggle_sort = this.sortByDateAscending;
+    };
+    HistoricPage.prototype.clearHistoric = function () {
+        var _this = this;
+        var confirm = this.alertCtrl.create({
+            title: 'Delete historic',
+            message: 'Careful: This action is irreversible',
+            buttons: [
+                {
+                    text: 'Cancel',
+                    role: 'cancel',
+                    handler: function () {
+                        console.log('Delete cancelled');
+                    }
+                },
+                {
+                    text: 'Delete',
+                    handler: function () {
+                        console.log('Delete confirmed');
+                        _this.storageService.clearHistoric();
+                        _this.showGames();
+                    }
+                }
+            ]
+        });
+        confirm.present();
     };
     HistoricPage.prototype.toLocaleDateString = function (d) {
         return (new Date(d)).toLocaleDateString();
@@ -81415,10 +81452,13 @@ var HistoricPage = (function () {
     HistoricPage.prototype.toLocaleTimeString = function (d) {
         return (new Date(d)).toLocaleTimeString();
     };
+    HistoricPage.prototype.winner = function (left, right) {
+        return left > right;
+    };
     HistoricPage = __decorate$110([
-        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/historic/historic.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-buttons left>\n      <button ion-button menuToggle>\n        <ion-icon name="menu"></ion-icon>\n      </button>\n    </ion-buttons>\n\n    <ion-title>\n      Historic\n    </ion-title>\n\n    <ion-buttons end>\n      <button ion-button (click)="toggleSort()">\n        <ion-icon name="ios-funnel-outline"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n</ion-header>\n\n<ion-content>\n  <ion-list>\n    <ion-card *ngFor="let item of items">\n      <ion-item>\n        <ion-row center>\n          <ion-col *ngFor="let set of item.sets">\n            <ion-badge color="dark" item-right>{{set.left}} : {{set.right}}</ion-badge>\n          </ion-col>\n        </ion-row>\n        <p>{{toLocaleDateString(item.date)}} - {{toLocaleTimeString(item.date)}}</p>\n      </ion-item>\n    </ion-card>\n  </ion-list>\n\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/historic/historic.html"*/
+        Component({template:/*ion-inline-start:"/home/asta/badminton/src/pages/historic/historic.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-buttons left>\n      <button ion-button menuToggle>\n        <ion-icon name="menu"></ion-icon>\n      </button>\n    </ion-buttons>\n\n    <ion-title>\n      Historic\n    </ion-title>\n\n    <ion-buttons end>\n      <button ion-button (click)="toggleSort()">\n        <ion-icon name="ios-funnel-outline"></ion-icon>\n      </button>\n      <button ion-button (click)="clearHistoric()" color="danger">\n        <ion-icon name="ios-trash-outline"></ion-icon>\n      </button>\n    </ion-buttons>\n  </ion-navbar>\n</ion-header>\n\n<style>\n  ion-col {\n    text-align: center;\n  }\n</style>\n\n<ion-content>\n  <ion-list>\n    <ion-card *ngFor="let game of games">\n      <ion-item>\n        <ion-grid>\n          <ion-row center *ngIf="game.player_one">\n            <ion-col width-33>\n              <h1>{{game.player_one.name}}</h1>\n            </ion-col>\n            <ion-col width-33 style="text-align: center;">\n              vs\n            </ion-col>\n            <ion-col width-33>\n              <h1>{{game.player_two.name}}</h1>\n            </ion-col>\n          </ion-row>\n          <ion-row center>\n            <ion-col width-33 *ngFor="let set of game.sets">\n              <ion-badge color="dark" item-right>\n                <span [style.font-weight]="winner(set.left, set.right) ? \'bold\' : \'normal\'">{{set.left}}</span> :\n                <span [style.font-weight]="winner(set.right, set.left) ? \'bold\' : \'normal\'">{{set.right}}</span>\n              </ion-badge>\n            </ion-col>\n          </ion-row>\n        </ion-grid>\n        <p>{{toLocaleDateString(game.date)}} - {{toLocaleTimeString(game.date)}}</p>\n      </ion-item>\n    </ion-card>\n  </ion-list>\n\n</ion-content>'/*ion-inline-end:"/home/asta/badminton/src/pages/historic/historic.html"*/
         }), 
-        __metadata$4('design:paramtypes', [StorageService])
+        __metadata$4('design:paramtypes', [StorageService, AlertController])
     ], HistoricPage);
     return HistoricPage;
 }());

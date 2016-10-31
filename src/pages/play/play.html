@@ -26,10 +26,7 @@
   <ion-grid>
     <ion-row center>
       <ion-col>
-        <button *ngIf="!gameHasStarted()" (click)="choosePlayerOne()" ion-button color="light">
-          {{player_one.name}}
-        </button>
-        <button *ngIf="gameHasStarted()" [clear]="true" [disabled]="true" (click)="choosePlayerOne()" ion-button color="dark">
+        <button [disabled]="gameHasStarted()" (click)="choosePlayerOne()" ion-button clear round color="dark">
           {{player_one.name}}
         </button>
       </ion-col>
@@ -39,10 +36,7 @@
       </ion-col>
       
       <ion-col>
-        <button *ngIf="!gameHasStarted()" (click)="choosePlayerTwo()" ion-button color="light">
-          {{player_two.name}}
-        </button>
-        <button *ngIf="gameHasStarted()" [clear]="true" [disabled]="true" (click)="choosePlayerTwo()" ion-button color="dark">
+        <button [disabled]="gameHasStarted()" (click)="choosePlayerTwo()" ion-button clear round color="dark">
           {{player_two.name}}
         </button>
       </ion-col>
@@ -63,7 +57,7 @@
 
   <ion-grid>
     <ion-row center>
-      <ion-col width-30 *ngFor="let set of sets">
+      <ion-col width-33 *ngFor="let set of sets">
         <ion-badge color="dark" item-right>{{set.left}} : {{set.right}}</ion-badge>
       </ion-col>
     </ion-row>
